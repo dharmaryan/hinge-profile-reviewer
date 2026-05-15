@@ -3,7 +3,7 @@ import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
-const MODELS = ["grok-4.1-fast", "grok-2-mini"];
+const MODELS = ["grok-4.1-fast"];
 
 export async function reviewWithGrok(
   images: string[],
