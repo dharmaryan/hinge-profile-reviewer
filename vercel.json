@@ -1,6 +1,9 @@
 {
   "functions": {
-    "src/app/api/review/route.ts": {
+    "app/api/review/route.ts": {
+      "maxDuration": 120
+    },
+    "app/api/consensus/route.ts": {
       "maxDuration": 60
     }
   }
