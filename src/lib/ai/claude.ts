@@ -3,7 +3,7 @@ import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
-const MODELS = ["claude-haiku-4-5"];
+const MODELS = ["claude-4.5-haiku", "claude-3-5-haiku", "claude-3-haiku"];
 
 export async function reviewWithClaude(
   images: string[],

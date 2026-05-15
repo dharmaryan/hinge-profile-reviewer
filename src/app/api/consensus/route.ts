@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-    const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+    const MODELS = ["gemini-3.1-flash-lite", "gemini-3.1-flash", "gemini-2.5-flash"];
 
     const prompt = `You're synthesizing ${reviewSummaries.length} independent AI reviews of someone's Hinge dating profile. Each reviewer had the same persona but different AI models, so they saw the same profile independently.
 
@@ -67,8 +67,12 @@ Respond with this JSON:
           },
         });
         const result = await model.generateContent(prompt);
-        const text = result.response.text();
-        consensus = JSON.parse(text);
+        const raw = result.response.text();
+        // Extract JSON safely
+        const start = raw.indexOf("{");
+        const end = raw.lastIndexOf("}");
+        if (start === -1 || end === -1) throw new Error("No JSON in response");
+        consensus = JSON.parse(raw.slice(start, end + 1));
         break;
       } catch (err) {
         console.error(`[consensus] ${modelId} failed:`, err instanceof Error ? err.message : err);

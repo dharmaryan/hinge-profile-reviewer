@@ -4,7 +4,7 @@ import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
-const MODELS = ["gpt-4o-mini", "gpt-5.4-mini"];
+const MODELS = ["gpt-5.4-nano", "gpt-5.4-mini", "gpt-4o-mini"];
 
 export async function reviewWithChatGPT(
   images: string[],
