@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
+import { parseReviewJSON } from "./parse-json";
 
 export async function reviewWithClaude(
   images: string[],
@@ -51,5 +52,5 @@ export async function reviewWithClaude(
 
   const text =
     response.content[0].type === "text" ? response.content[0].text : "";
-  return JSON.parse(text) as ReviewResult;
+  return parseReviewJSON(text);
 }

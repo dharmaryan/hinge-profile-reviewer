@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
+import { parseReviewJSON } from "./parse-json";
 
 export async function reviewWithChatGPT(
   images: string[],
@@ -17,7 +18,7 @@ export async function reviewWithChatGPT(
 
   const response = await client.chat.completions.create({
     model: "gpt-5.4-mini",
-    max_tokens: 4096,
+    max_completion_tokens: 4096,
     messages: [
       { role: "system", content: systemPrompt },
       {
@@ -34,5 +35,5 @@ export async function reviewWithChatGPT(
   });
 
   const text = response.choices[0]?.message?.content ?? "";
-  return JSON.parse(text) as ReviewResult;
+  return parseReviewJSON(text);
 }

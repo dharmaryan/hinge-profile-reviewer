@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
+import { parseReviewJSON } from "./parse-json";
 
 export async function reviewWithGrok(
   images: string[],
@@ -37,6 +38,5 @@ export async function reviewWithGrok(
   });
 
   const text = response.choices[0]?.message?.content ?? "";
-  const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-  return JSON.parse(cleaned) as ReviewResult;
+  return parseReviewJSON(text);
 }

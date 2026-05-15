@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
+import { parseReviewJSON } from "./parse-json";
 
 export async function reviewWithGemini(
   images: string[],
@@ -34,5 +35,5 @@ export async function reviewWithGemini(
   ]);
 
   const text = result.response.text();
-  return JSON.parse(text) as ReviewResult;
+  return parseReviewJSON(text);
 }

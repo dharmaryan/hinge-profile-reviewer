@@ -23,6 +23,35 @@ export default function ReviewPage() {
   const [isReviewing, setIsReviewing] = useState(false);
   const [results, setResults] = useState<ReviewResponse | null>(null);
 
+  const pollForResults = useCallback(async (jobId: string) => {
+    const maxAttempts = 60; // 2s * 60 = 2 min max
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+      try {
+        const res = await fetch(`/api/review?jobId=${jobId}`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.status === "done") {
+          setResults({ results: data.results });
+          setIsReviewing(false);
+          return;
+        }
+      } catch {
+        // Network blip - keep polling
+      }
+    }
+    // Timed out
+    setResults({
+      results: {
+        claude: { status: "rejected", error: "Timed out" },
+        chatgpt: { status: "rejected", error: "Timed out" },
+        gemini: { status: "rejected", error: "Timed out" },
+        grok: { status: "rejected", error: "Timed out" },
+      },
+    });
+    setIsReviewing(false);
+  }, []);
+
   const handleStartReview = useCallback(async () => {
     setStep("results");
     setIsReviewing(true);
@@ -35,10 +64,11 @@ export default function ReviewPage() {
         body: JSON.stringify({ images, persona }),
       });
 
-      if (!res.ok) throw new Error(`Review failed: ${res.status}`);
+      if (!res.ok) throw new Error(`Submit failed: ${res.status}`);
 
-      const data: ReviewResponse = await res.json();
-      setResults(data);
+      const { jobId } = await res.json();
+      // Poll in background - survives tab switches
+      pollForResults(jobId);
     } catch (err) {
       console.error("Review error:", err);
       setResults({
@@ -49,10 +79,9 @@ export default function ReviewPage() {
           grok: { status: "rejected", error: "Request failed" },
         },
       });
-    } finally {
       setIsReviewing(false);
     }
-  }, [images, persona]);
+  }, [images, persona, pollForResults]);
 
   const handleReset = () => {
     setStep("upload");
