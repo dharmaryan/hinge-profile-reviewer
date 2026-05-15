@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-    const MODELS = ["gemini-3.1-flash-lite", "gemini-3.1-flash", "gemini-2.5-flash"];
+    const MODELS = ["gemini-3.1-flash-lite", "gemini-2.5-flash"];
 
     const prompt = `You're synthesizing ${reviewSummaries.length} independent AI reviews of someone's Hinge dating profile. Each reviewer had the same persona but different AI models, so they saw the same profile independently.
 

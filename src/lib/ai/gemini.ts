@@ -3,7 +3,7 @@ import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
-const MODELS = ["gemini-3.1-flash-lite", "gemini-3.1-flash", "gemini-2.5-flash"];
+const MODELS = ["gemini-3.1-flash-lite", "gemini-2.5-flash"];
 
 export async function reviewWithGemini(
   images: string[],
