@@ -16,7 +16,7 @@ export async function reviewWithChatGPT(
     }));
 
   const response = await client.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: "gpt-5.4-mini",
     max_tokens: 4096,
     messages: [
       { role: "system", content: systemPrompt },

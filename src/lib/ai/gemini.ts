@@ -10,7 +10,7 @@ export async function reviewWithGemini(
   const systemPrompt = buildSystemPrompt(persona);
 
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-3-flash-preview",
     systemInstruction: systemPrompt,
     generationConfig: {
       maxOutputTokens: 4096,

@@ -19,7 +19,7 @@ export async function reviewWithGrok(
     }));
 
   const response = await client.chat.completions.create({
-    model: "grok-2-vision-latest",
+    model: "grok-4.3",
     max_tokens: 4096,
     messages: [
       { role: "system", content: systemPrompt },
