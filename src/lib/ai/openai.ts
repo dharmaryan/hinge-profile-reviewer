@@ -1,9 +1,10 @@
+
 import OpenAI from "openai";
 import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
-const MODELS = ["gpt-5.4-mini", "gpt-4.1-mini", "gpt-4o-mini"];
+const MODELS = ["gpt-4o-mini", "gpt-5.4-mini"];
 
 export async function reviewWithChatGPT(
   images: string[],
