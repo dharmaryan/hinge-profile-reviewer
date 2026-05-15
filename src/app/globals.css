@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg-primary: #0D0B14;
+  --color-bg-secondary: #161224;
+  --color-bg-elevated: #1E1A2E;
+  --color-accent-rose: #E8598B;
+  --color-accent-pink: #FF7EB3;
+  --color-accent-blush: #FFB4D2;
+  --color-text-primary: #F5F0FF;
+  --color-text-secondary: #A89EC2;
+  --color-text-muted: #6B6080;
+  --color-rating-low: #FF4D6A;
+  --color-rating-mid: #FFB347;
+  --color-rating-high: #4ADE80;
+  --color-glass-bg: rgba(255, 255, 255, 0.04);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 1.25rem;
+}
+
+.glass-card-hover {
+  transition: all 0.3s ease;
+}
+.glass-card-hover:hover {
+  background: var(--color-glass-bg-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Glow effect */
+.glow-accent {
+  box-shadow: 0 0 40px rgba(232, 89, 139, 0.15);
+}
+
+/* Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes count-up {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-count-up {
+  animation: count-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Staggered animation delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 3px;
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
