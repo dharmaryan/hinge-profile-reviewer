@@ -6,33 +6,48 @@ export default function Home() {
   return (
     <main className="flex-1 flex flex-col">
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center">
+      <section className="flex-1 flex flex-col items-center justify-center px-6 py-28 text-center">
         <div className="animate-fade-in-up max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-rose/10 border border-accent-rose/20 text-accent-rose text-sm font-medium mb-8">
-            <span className="w-2 h-2 rounded-full bg-accent-rose animate-pulse-glow" />
-            4 AI models, zero sugar-coating
-          </div>
+          <p className="text-sm tracking-widest uppercase text-accent mb-8 font-medium">
+            4 AI models &middot; zero sugar-coating
+          </p>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
-            Get your Hinge profile{" "}
-            <span className="bg-gradient-to-r from-accent-rose via-accent-pink to-accent-blush bg-clip-text text-transparent">
-              roasted
+          <h1 className="font-serif text-6xl sm:text-7xl lg:text-8xl leading-[1.05] mb-8 text-text-primary">
+            Get your profile{" "}
+            <span className="italic relative inline-block">
+              reviewed
+              <svg
+                className="absolute -inset-x-3 -inset-y-2 w-[calc(100%+24px)] h-[calc(100%+16px)]"
+                viewBox="0 0 200 80"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <ellipse
+                  cx="100"
+                  cy="40"
+                  rx="95"
+                  ry="35"
+                  stroke="#5C3D6E"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 3"
+                  opacity="0.5"
+                />
+              </svg>
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-text-secondary max-w-lg mx-auto mb-10">
-            Upload your screenshots. Pick a reviewer persona. Get brutally
-            honest feedback from Claude, ChatGPT, Gemini, and Grok — all at
-            once.
+          <p className="text-lg sm:text-xl text-text-secondary max-w-md mx-auto mb-12 leading-relaxed">
+            Upload your Hinge screenshots. Pick who&apos;s judging you. Get
+            brutally honest feedback from Claude, ChatGPT, Gemini, and Grok.
           </p>
 
           <Link
             href="/review"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-accent-rose hover:bg-accent-pink text-white font-semibold rounded-2xl text-lg transition-all duration-300 hover:scale-105 glow-accent"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-text-primary text-bg-primary font-medium rounded-full text-base transition-all duration-300 hover:bg-accent hover:scale-[1.02]"
           >
-            Review My Profile
+            Review my profile
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -49,36 +64,47 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="px-6 py-20 border-t border-glass-border">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16">
+      <section className="px-6 py-24 border-t border-border">
+        <div className="max-w-3xl mx-auto">
+          <p className="text-sm tracking-widest uppercase text-accent mb-4 font-medium">
             How it works
+          </p>
+          <h2 className="font-serif text-4xl sm:text-5xl mb-16">
+            Three steps to a<br />
+            <span className="italic">better profile.</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="space-y-0">
             {[
               {
-                step: "01",
-                title: "Upload",
-                desc: "Screenshot your Hinge profile and upload up to 6 images.",
+                num: "01",
+                title: "Upload your screenshots",
+                desc: "Take screenshots of your Hinge profile and drop them in. Up to 6 images.",
               },
               {
-                step: "02",
-                title: "Pick a reviewer",
-                desc: "Define who's reviewing you — age, city, vibe — or write your own persona.",
+                num: "02",
+                title: "Choose your reviewer",
+                desc: "Define who\u2019s reviewing you \u2014 their age, city, vibe \u2014 or write a detailed persona yourself.",
               },
               {
-                step: "03",
-                title: "Get roasted",
-                desc: "4 AI models review your profile independently. No averaging, no bias.",
+                num: "03",
+                title: "Get honest feedback",
+                desc: "Four AI models review your profile independently. No shared context, no averaging.",
               },
-            ].map((item) => (
-              <div key={item.step} className="glass-card p-8 glass-card-hover">
-                <div className="text-accent-rose font-mono text-sm mb-4">
-                  {item.step}
+            ].map((item, i) => (
+              <div
+                key={item.num}
+                className={`flex gap-8 py-10 ${i < 2 ? "border-b border-border" : ""}`}
+              >
+                <span className="text-sm font-mono text-text-muted pt-1">
+                  {item.num}
+                </span>
+                <div>
+                  <h3 className="text-xl font-medium mb-2">{item.title}</h3>
+                  <p className="text-text-secondary leading-relaxed max-w-md">
+                    {item.desc}
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                <p className="text-text-secondary">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -86,11 +112,8 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="px-6 py-8 border-t border-glass-border text-center text-text-muted text-sm">
-        <p>
-          Built for better dating profiles. AI-generated reviews — take with a
-          grain of salt and a glass of wine.
-        </p>
+      <footer className="px-6 py-10 border-t border-border text-center text-text-muted text-sm">
+        AI-generated reviews. Take with a grain of salt and a glass of wine.
       </footer>
     </main>
   );

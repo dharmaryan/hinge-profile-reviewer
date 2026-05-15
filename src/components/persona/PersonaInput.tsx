@@ -40,63 +40,60 @@ export function PersonaInput({
         body: JSON.stringify(quickFields),
       });
       const data = await res.json();
-      if (data.persona) {
-        onPersonaChange(data.persona);
-      }
+      if (data.persona) onPersonaChange(data.persona);
     } catch {
-      // Error handled by parent
+      // handled by parent
     }
     onGenerate();
   };
 
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold mb-2">Who&apos;s reviewing you?</h3>
-      <p className="text-sm text-text-secondary mb-6">
-        Define the persona of your reviewer. The more specific, the better the
-        feedback.
+      <h2 className="font-serif text-3xl sm:text-4xl mb-2">
+        Who&apos;s <span className="italic">reviewing</span> you?
+      </h2>
+      <p className="text-text-secondary text-sm mb-8">
+        The more specific the persona, the better the feedback.
       </p>
 
       {/* Mode tabs */}
-      <div className="flex gap-1 p-1 bg-bg-secondary rounded-xl mb-6">
+      <div className="flex border-b border-border mb-8">
         {(["quick", "custom"] as const).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${
+            className={`pb-3 px-1 mr-6 text-sm font-medium transition-all border-b-2 ${
               mode === m
-                ? "bg-accent-rose text-white"
-                : "text-text-secondary hover:text-text-primary"
+                ? "border-accent text-accent"
+                : "border-transparent text-text-muted hover:text-text-secondary"
             }`}
           >
-            {m === "quick" ? "Quick Start" : "Write Your Own"}
+            {m === "quick" ? "Quick start" : "Write your own"}
           </button>
         ))}
       </div>
 
       {mode === "quick" ? (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-text-secondary mb-1.5">
-                Age Range
+              <label className="block text-xs font-medium text-text-secondary mb-1.5 uppercase tracking-wide">
+                Age range
               </label>
               <select
                 value={quickFields.ageRange}
                 onChange={(e) =>
                   setQuickFields({ ...quickFields, ageRange: e.target.value })
                 }
-                className="w-full bg-bg-secondary border border-glass-border rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent-rose/50 transition-colors"
+                className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors text-sm"
               >
                 {AGE_RANGES.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
+                  <option key={r} value={r}>{r}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm text-text-secondary mb-1.5">
+              <label className="block text-xs font-medium text-text-secondary mb-1.5 uppercase tracking-wide">
                 Gender
               </label>
               <select
@@ -104,19 +101,17 @@ export function PersonaInput({
                 onChange={(e) =>
                   setQuickFields({ ...quickFields, gender: e.target.value })
                 }
-                className="w-full bg-bg-secondary border border-glass-border rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent-rose/50 transition-colors"
+                className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-colors text-sm"
               >
                 {GENDERS.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
+                  <option key={g} value={g}>{g}</option>
                 ))}
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm text-text-secondary mb-1.5">
+            <label className="block text-xs font-medium text-text-secondary mb-1.5 uppercase tracking-wide">
               City
             </label>
             <input
@@ -125,13 +120,13 @@ export function PersonaInput({
               onChange={(e) =>
                 setQuickFields({ ...quickFields, city: e.target.value })
               }
-              placeholder="e.g. San Francisco, NYC, London"
-              className="w-full bg-bg-secondary border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-rose/50 transition-colors"
+              placeholder="San Francisco, NYC, London..."
+              className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors text-sm"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-text-secondary mb-1.5">
+            <label className="block text-xs font-medium text-text-secondary mb-1.5 uppercase tracking-wide">
               Vibe
             </label>
             <input
@@ -140,13 +135,13 @@ export function PersonaInput({
               onChange={(e) =>
                 setQuickFields({ ...quickFields, vibe: e.target.value })
               }
-              placeholder="e.g. artsy and outdoorsy, tech bro, corporate girlie"
-              className="w-full bg-bg-secondary border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-rose/50 transition-colors"
+              placeholder="Artsy and outdoorsy, tech bro, corporate girlie..."
+              className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors text-sm"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-text-secondary mb-1.5">
+            <label className="block text-xs font-medium text-text-secondary mb-1.5 uppercase tracking-wide">
               Looking for
             </label>
             <input
@@ -155,8 +150,8 @@ export function PersonaInput({
               onChange={(e) =>
                 setQuickFields({ ...quickFields, lookingFor: e.target.value })
               }
-              placeholder="e.g. something serious, casual but not boring"
-              className="w-full bg-bg-secondary border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-rose/50 transition-colors"
+              placeholder="Something serious, casual but not boring..."
+              className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors text-sm"
             />
           </div>
 
@@ -164,34 +159,9 @@ export function PersonaInput({
             <button
               onClick={handleQuickGenerate}
               disabled={!quickFieldsValid || isGenerating}
-              className="w-full py-3.5 bg-accent-rose hover:bg-accent-pink disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all"
+              className="w-full py-3.5 bg-text-primary text-bg-primary disabled:opacity-30 disabled:cursor-not-allowed font-medium rounded-full transition-all hover:bg-accent text-sm"
             >
-              {isGenerating ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg
-                    className="w-4 h-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                  Generating...
-                </span>
-              ) : (
-                "Generate My Reviewer"
-              )}
+              {isGenerating ? "Generating..." : "Generate reviewer"}
             </button>
           )}
         </div>
@@ -200,9 +170,9 @@ export function PersonaInput({
           <textarea
             value={persona}
             onChange={(e) => onPersonaChange(e.target.value)}
-            placeholder={`Describe your ideal reviewer in detail. The more specific, the better.\n\nExample: "You are a 24-year-old Asian American woman living in San Francisco. You grew up in the Bay Area, went to Stanford, and now work as a PM at a mid-stage startup..."`}
-            rows={12}
-            className="w-full bg-bg-secondary border border-glass-border rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-rose/50 transition-colors resize-none"
+            placeholder={`Describe your ideal reviewer in detail...\n\nExample: "You are a 24-year-old Asian American woman living in San Francisco. You grew up in the Bay Area, went to Stanford, and now work as a PM at a mid-stage startup..."`}
+            rows={10}
+            className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors resize-none text-sm leading-relaxed"
           />
           <p className="text-xs text-text-muted mt-2">
             {persona.length}/5000 characters
@@ -212,16 +182,16 @@ export function PersonaInput({
 
       {/* Persona preview */}
       {persona && (
-        <div className="mt-6 glass-card p-6">
+        <div className="mt-8 border border-border rounded-xl p-6 bg-bg-secondary">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-accent-rose">
-              Your Reviewer
-            </h4>
+            <p className="text-xs font-medium uppercase tracking-wide text-accent">
+              Your reviewer
+            </p>
             <button
               onClick={() => onPersonaChange("")}
-              className="text-xs text-text-muted hover:text-accent-rose transition-colors"
+              className="text-xs text-text-muted hover:text-accent transition-colors"
             >
-              Clear & redo
+              Clear
             </button>
           </div>
           <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">

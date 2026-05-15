@@ -13,23 +13,24 @@ const MODEL_ORDER: ModelName[] = ["claude", "chatgpt", "gemini", "grok"];
 export function ResultsGrid({ results, isLoading }: ResultsGridProps) {
   return (
     <div className="w-full">
-      <h3 className="text-lg font-semibold mb-2">Your Reviews</h3>
-      <p className="text-sm text-text-secondary mb-6">
-        4 independent AI reviewers, no shared context, no averaging.
+      <h2 className="font-serif text-3xl sm:text-4xl mb-2">
+        Your <span className="italic">reviews</span>
+      </h2>
+      <p className="text-text-secondary text-sm mb-8">
+        4 independent reviews. No shared context.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {MODEL_ORDER.map((model, i) => {
+        {MODEL_ORDER.map((model) => {
           const modelResult = results?.results[model];
           return (
-            <div key={model} className={`delay-${(i + 1) * 100}`}>
-              <ReviewCard
-                modelName={model}
-                result={modelResult?.data}
-                error={modelResult?.status === "rejected" ? modelResult.error : undefined}
-                isLoading={isLoading}
-              />
-            </div>
+            <ReviewCard
+              key={model}
+              modelName={model}
+              result={modelResult?.data}
+              error={modelResult?.status === "rejected" ? modelResult.error : undefined}
+              isLoading={isLoading}
+            />
           );
         })}
       </div>

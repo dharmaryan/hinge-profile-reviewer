@@ -20,11 +20,9 @@ export function ImageUploader({
     async (files: FileList) => {
       const remaining = maxImages - images.length;
       const filesToProcess = Array.from(files).slice(0, remaining);
-
       const compressed = await Promise.all(
         filesToProcess.map((f) => compressImage(f))
       );
-
       onImagesChange([...images, ...compressed]);
     },
     [images, onImagesChange, maxImages]
@@ -33,9 +31,7 @@ export function ImageUploader({
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
-      if (e.dataTransfer.files.length) {
-        handleFiles(e.dataTransfer.files);
-      }
+      if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
     },
     [handleFiles]
   );
@@ -48,20 +44,22 @@ export function ImageUploader({
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Upload your profile screenshots</h3>
-        <span className="text-sm text-text-secondary">
-          {images.length}/{maxImages}
-        </span>
+      <div className="mb-2">
+        <h2 className="font-serif text-3xl sm:text-4xl mb-2">
+          Upload your <span className="italic">screenshots</span>
+        </h2>
+        <p className="text-text-secondary text-sm">
+          {images.length} of {maxImages} photos added
+        </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">
         {slots.map((i) => {
           const img = images[i];
           return (
             <div
               key={i}
-              className="relative aspect-[3/4] rounded-2xl overflow-hidden"
+              className="relative aspect-[3/4] rounded-xl overflow-hidden"
               onDragOver={(e) => e.preventDefault()}
               onDrop={!img ? handleDrop : undefined}
             >
@@ -69,31 +67,31 @@ export function ImageUploader({
                 <>
                   <img
                     src={img}
-                    alt={`Profile screenshot ${i + 1}`}
+                    alt={`Screenshot ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
                   <button
                     onClick={() => removeImage(i)}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-red-500/80 transition-colors"
-                    aria-label="Remove image"
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-text-primary hover:bg-red-50 hover:text-red-500 transition-colors shadow-sm"
+                    aria-label="Remove"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
-                  <div className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-xs text-white font-medium">
+                  <div className="absolute bottom-2 left-2 w-5 h-5 rounded-full bg-white/90 flex items-center justify-center text-[10px] text-text-primary font-medium shadow-sm">
                     {i + 1}
                   </div>
                 </>
               ) : (
                 <button
                   onClick={() => inputRef.current?.click()}
-                  className="w-full h-full border-2 border-dashed border-text-muted/30 rounded-2xl flex flex-col items-center justify-center gap-2 text-text-muted hover:border-accent-rose/50 hover:text-accent-rose/70 transition-colors cursor-pointer"
+                  className="w-full h-full border border-dashed border-border hover:border-accent/40 rounded-xl flex flex-col items-center justify-center gap-1.5 text-text-muted hover:text-accent transition-colors cursor-pointer bg-bg-secondary"
                 >
-                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
-                  <span className="text-xs">Add photo</span>
+                  <span className="text-[11px]">Add</span>
                 </button>
               )}
             </div>
@@ -112,10 +110,6 @@ export function ImageUploader({
           e.target.value = "";
         }}
       />
-
-      <p className="text-xs text-text-muted mt-3 text-center">
-        Drag & drop or tap to upload. JPEG, PNG, or WebP.
-      </p>
     </div>
   );
 }
