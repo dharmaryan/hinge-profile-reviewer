@@ -50,10 +50,10 @@ export function PersonaInput({
   return (
     <div className="w-full">
       <h2 className="font-serif text-3xl sm:text-4xl mb-2">
-        Who&apos;s <span className="italic">reviewing</span> you?
+        Who&apos;s <span className="italic">judging</span> you?
       </h2>
       <p className="text-text-secondary text-sm mb-8">
-        The more specific the persona, the better the feedback.
+        More specific = better feedback.
       </p>
 
       {/* Mode tabs */}
@@ -161,7 +161,7 @@ export function PersonaInput({
               disabled={!quickFieldsValid || isGenerating}
               className="w-full py-3.5 bg-text-primary text-bg-primary disabled:opacity-30 disabled:cursor-not-allowed font-medium rounded-full transition-all hover:bg-accent text-sm"
             >
-              {isGenerating ? "Generating..." : "Generate reviewer"}
+              {isGenerating ? "Generating..." : "Build my reviewer"}
             </button>
           )}
         </div>
@@ -170,7 +170,7 @@ export function PersonaInput({
           <textarea
             value={persona}
             onChange={(e) => onPersonaChange(e.target.value)}
-            placeholder={`Describe your ideal reviewer in detail...\n\nExample: "You are a 24-year-old Asian American woman living in San Francisco. You grew up in the Bay Area, went to Stanford, and now work as a PM at a mid-stage startup..."`}
+            placeholder={`Write your reviewer's persona. Go deep – the more detail, the sharper the feedback.\n\nExample: "You're a 24-year-old Asian American woman in SF. Grew up in Cupertino, went to Stanford, now a PM at a Series B startup. You SoulCycle, brunch at Marlowe, and have strong opinions about Erewhon smoothies..."`}
             rows={10}
             className="w-full bg-bg-secondary border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors resize-none text-sm leading-relaxed"
           />

@@ -9,7 +9,7 @@ export default function Home() {
       <section className="flex-1 flex flex-col items-center justify-center px-6 py-28 text-center">
         <div className="animate-fade-in-up max-w-2xl">
           <p className="text-sm tracking-widest uppercase text-accent mb-8 font-medium">
-            4 AI models &middot; zero sugar-coating
+            4 AI models &middot; zero fluff
           </p>
 
           <h1 className="font-serif text-6xl sm:text-7xl lg:text-8xl leading-[1.05] mb-8 text-text-primary">
@@ -37,15 +37,15 @@ export default function Home() {
           </h1>
 
           <p className="text-lg sm:text-xl text-text-secondary max-w-md mx-auto mb-12 leading-relaxed">
-            Upload your Hinge screenshots. Pick who&apos;s judging you. Get
-            brutally honest feedback from Claude, ChatGPT, Gemini, and Grok.
+            Drop your Hinge screenshots, pick who&apos;s judging you, and get
+            honest feedback from Claude, ChatGPT, Gemini, and Grok. No filter.
           </p>
 
           <Link
             href="/review"
             className="inline-flex items-center gap-3 px-8 py-4 bg-text-primary text-bg-primary font-medium rounded-full text-base transition-all duration-300 hover:bg-accent hover:scale-[1.02]"
           >
-            Review my profile
+            Let&apos;s go
             <svg
               className="w-4 h-4"
               fill="none"
@@ -70,26 +70,26 @@ export default function Home() {
             How it works
           </p>
           <h2 className="font-serif text-4xl sm:text-5xl mb-16">
-            Three steps to a<br />
-            <span className="italic">better profile.</span>
+            Dead simple.<br />
+            <span className="italic">Stupidly honest.</span>
           </h2>
 
           <div className="space-y-0">
             {[
               {
                 num: "01",
-                title: "Upload your screenshots",
-                desc: "Take screenshots of your Hinge profile and drop them in. Up to 6 images.",
+                title: "Drop your screenshots",
+                desc: "Screenshot your Hinge profile. Up to 6 images.",
               },
               {
                 num: "02",
-                title: "Choose your reviewer",
-                desc: "Define who\u2019s reviewing you \u2014 their age, city, vibe \u2014 or write a detailed persona yourself.",
+                title: "Pick your reviewer",
+                desc: "Set their age, city, vibe – or write the whole persona yourself. More specific = better feedback.",
               },
               {
                 num: "03",
-                title: "Get honest feedback",
-                desc: "Four AI models review your profile independently. No shared context, no averaging.",
+                title: "Get roasted",
+                desc: "4 AI models review you independently. No shared context, no averaging out.",
               },
             ].map((item, i) => (
               <div
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="px-6 py-10 border-t border-border text-center text-text-muted text-sm">
-        AI-generated reviews. Take with a grain of salt and a glass of wine.
+        AI-generated reviews. Grain of salt, glass of wine.
       </footer>
     </main>
   );

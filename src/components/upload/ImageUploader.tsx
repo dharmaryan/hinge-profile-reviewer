@@ -46,10 +46,10 @@ export function ImageUploader({
     <div className="w-full">
       <div className="mb-2">
         <h2 className="font-serif text-3xl sm:text-4xl mb-2">
-          Upload your <span className="italic">screenshots</span>
+          Drop your <span className="italic">screenshots</span>
         </h2>
         <p className="text-text-secondary text-sm">
-          {images.length} of {maxImages} photos added
+          {images.length}/{maxImages} added
         </p>
       </div>
 

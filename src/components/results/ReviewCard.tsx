@@ -97,7 +97,7 @@ export function ReviewCard({ modelName, result, error, isLoading }: ReviewCardPr
 
       {error && (
         <div className="p-4 rounded-lg bg-rating-low/5 border border-rating-low/15">
-          <p className="text-sm text-rating-low font-medium">Failed to get review</p>
+          <p className="text-sm text-rating-low font-medium">Couldn&apos;t get this one</p>
           <p className="text-xs text-text-muted mt-1">{error}</p>
         </div>
       )}
@@ -118,17 +118,17 @@ export function ReviewCard({ modelName, result, error, isLoading }: ReviewCardPr
             <div className="p-3 rounded-lg bg-bg-elevated">
               <div className="flex items-center gap-1.5 mb-1">
                 <span className="text-base">{result.swipe_right.answer === "yes" ? "👍" : "👎"}</span>
-                <span className="text-xs font-medium text-text-muted">Swipe right?</span>
+                <span className="text-xs font-medium text-text-muted">Swipe?</span>
               </div>
               <p className="text-xs text-text-secondary leading-relaxed">{result.swipe_right.reason}</p>
             </div>
             <div className="p-3 rounded-lg bg-bg-elevated">
               <div className="flex items-center gap-1.5 mb-1">
                 <span className="text-base">{result.message_first.would_message_first ? "💬" : "⏳"}</span>
-                <span className="text-xs font-medium text-text-muted">Message first?</span>
+                <span className="text-xs font-medium text-text-muted">Message?</span>
               </div>
               <p className="text-xs text-text-secondary leading-relaxed">
-                {result.message_first.would_message_first ? "Would message first" : "Would wait"}
+                {result.message_first.would_message_first ? "I'd message first" : "I'd wait"}
               </p>
             </div>
           </div>
@@ -205,21 +205,21 @@ export function ReviewCard({ modelName, result, error, isLoading }: ReviewCardPr
           )}
 
           {/* Messaging */}
-          <Section title="Messaging">
+          <Section title="Openers">
             <div className="space-y-2 text-sm text-text-secondary">
               <p>
-                <span className="font-medium text-text-primary">Generic opener?</span>{" "}
+                <span className="font-medium text-text-primary">Reply to a &quot;hey&quot;?</span>{" "}
                 {result.message_first.generic_opener_response}
               </p>
               <p>
-                <span className="font-medium text-text-primary">What would land:</span>{" "}
+                <span className="font-medium text-text-primary">What&apos;d actually work:</span>{" "}
                 {result.message_first.what_would_get_a_response}
               </p>
             </div>
           </Section>
 
           {/* Top 3 */}
-          <Section title="Top 3 changes" defaultOpen>
+          <Section title="Biggest moves" defaultOpen>
             <ol className="space-y-2">
               {result.top_3_changes.map((change, i) => (
                 <li key={i} className="flex gap-3 text-sm">

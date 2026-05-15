@@ -126,7 +126,7 @@ export default function ReviewPage() {
                   disabled={images.length === 0}
                   className="w-full py-4 bg-text-primary text-bg-primary disabled:opacity-30 disabled:cursor-not-allowed font-medium rounded-full transition-all hover:bg-accent text-base"
                 >
-                  Next: choose your reviewer
+                  Next
                 </button>
               </div>
             </div>
@@ -152,7 +152,7 @@ export default function ReviewPage() {
                   disabled={persona.length < 50}
                   className="flex-1 py-4 bg-text-primary text-bg-primary disabled:opacity-30 disabled:cursor-not-allowed font-medium rounded-full transition-all hover:bg-accent text-base"
                 >
-                  Get reviewed
+                  Run it
                 </button>
               </div>
             </div>
@@ -166,7 +166,7 @@ export default function ReviewPage() {
                   onClick={handleReset}
                   className="w-full py-4 border border-border text-text-secondary hover:text-text-primary hover:border-text-primary rounded-full transition-all font-medium text-base"
                 >
-                  Start over
+                  Go again
                 </button>
               </div>
             </div>

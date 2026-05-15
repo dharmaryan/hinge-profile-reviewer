@@ -14,10 +14,10 @@ export function ResultsGrid({ results, isLoading }: ResultsGridProps) {
   return (
     <div className="w-full">
       <h2 className="font-serif text-3xl sm:text-4xl mb-2">
-        Your <span className="italic">reviews</span>
+        The <span className="italic">verdict</span>
       </h2>
       <p className="text-text-secondary text-sm mb-8">
-        4 independent reviews. No shared context.
+        4 models, no shared context, no pulled punches.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
