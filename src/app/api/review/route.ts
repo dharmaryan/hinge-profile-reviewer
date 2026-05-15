@@ -1,110 +1,68 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { reviewRequestSchema } from "@/lib/validation";
-import { runAllReviews } from "@/lib/ai/run-reviews";
-import { ReviewResponse } from "@/lib/ai/types";
+import { reviewWithClaude } from "@/lib/ai/claude";
+import { reviewWithChatGPT } from "@/lib/ai/openai";
+import { reviewWithGemini } from "@/lib/ai/gemini";
+import { reviewWithGrok } from "@/lib/ai/grok";
+import { ModelName } from "@/lib/ai/types";
 
 export const maxDuration = 120;
 
-// In-memory job store. Fine for MVP - jobs auto-expire after 10 minutes.
-const jobs = new Map<
-  string,
-  { status: "running" | "done"; results?: ReviewResponse; createdAt: number }
->();
+const adapters: Record<ModelName, (images: string[], persona: string) => Promise<unknown>> = {
+  claude: reviewWithClaude,
+  chatgpt: reviewWithChatGPT,
+  gemini: reviewWithGemini,
+  grok: reviewWithGrok,
+};
 
-// Clean up old jobs every request
-function cleanOldJobs() {
-  const tenMinutes = 10 * 60 * 1000;
-  const now = Date.now();
-  for (const [id, job] of jobs) {
-    if (now - job.createdAt > tenMinutes) jobs.delete(id);
-  }
-}
-
-// POST - start a review job
 export async function POST(req: NextRequest) {
-  cleanOldJobs();
+  const body = await req.json();
+  const parsed = reviewRequestSchema.safeParse(body);
 
-  try {
-    const body = await req.json();
-    const parsed = reviewRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return new Response(JSON.stringify({ error: "Invalid input" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid input", details: parsed.error.flatten() },
-        { status: 400 }
+  const { images, persona } = parsed.data;
+
+  console.log(`[review] Starting stream with ${images.length} images`);
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
+
+      const send = (model: ModelName, data: unknown) => {
+        controller.enqueue(encoder.encode(JSON.stringify({ model, ...data as Record<string, unknown> }) + "\n"));
+      };
+
+      const promises = (Object.entries(adapters) as [ModelName, typeof adapters[ModelName]][]).map(
+        async ([name, fn]) => {
+          try {
+            console.log(`[${name}] Starting...`);
+            const result = await fn(images, persona);
+            console.log(`[${name}] Success`);
+            send(name, { status: "fulfilled", data: result });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : "Unknown error";
+            console.error(`[${name}] Failed:`, message);
+            send(name, { status: "rejected", error: message });
+          }
+        }
       );
-    }
 
-    const { images, persona } = parsed.data;
-    const jobId = crypto.randomUUID();
+      await Promise.all(promises);
+      controller.close();
+    },
+  });
 
-    console.log(
-      `[review] Job ${jobId}: Starting with ${images.length} images, persona length: ${persona.length}`
-    );
-    console.log(
-      `[review] API keys present: anthropic=${!!process.env.ANTHROPIC_API_KEY}, openai=${!!process.env.OPENAI_API_KEY}, google=${!!process.env.GOOGLE_AI_API_KEY}, xai=${!!process.env.XAI_API_KEY}`
-    );
-
-    jobs.set(jobId, { status: "running", createdAt: Date.now() });
-
-    // Fire and don't await - let it run in the background
-    runAllReviews(images, persona)
-      .then((results) => {
-        console.log(
-          `[review] Job ${jobId}: Done. Claude: ${results.results.claude.status}, ChatGPT: ${results.results.chatgpt.status}, Gemini: ${results.results.gemini.status}, Grok: ${results.results.grok.status}`
-        );
-        const job = jobs.get(jobId);
-        if (job) {
-          job.status = "done";
-          job.results = results;
-        }
-      })
-      .catch((err) => {
-        console.error(`[review] Job ${jobId}: Unhandled error:`, err);
-        const job = jobs.get(jobId);
-        if (job) {
-          job.status = "done";
-          job.results = {
-            results: {
-              claude: { status: "rejected", error: "Server error" },
-              chatgpt: { status: "rejected", error: "Server error" },
-              gemini: { status: "rejected", error: "Server error" },
-              grok: { status: "rejected", error: "Server error" },
-            },
-          };
-        }
-      });
-
-    return NextResponse.json({ jobId });
-  } catch (err) {
-    console.error("[review] Unhandled error:", err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to start review" },
-      { status: 500 }
-    );
-  }
-}
-
-// GET - poll for job results
-export async function GET(req: NextRequest) {
-  const jobId = req.nextUrl.searchParams.get("jobId");
-
-  if (!jobId) {
-    return NextResponse.json({ error: "Missing jobId" }, { status: 400 });
-  }
-
-  const job = jobs.get(jobId);
-
-  if (!job) {
-    return NextResponse.json({ error: "Job not found" }, { status: 404 });
-  }
-
-  if (job.status === "running") {
-    return NextResponse.json({ status: "running" });
-  }
-
-  // Done - return results and clean up
-  const results = job.results;
-  jobs.delete(jobId);
-  return NextResponse.json({ status: "done", ...results });
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "application/x-ndjson",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
 }

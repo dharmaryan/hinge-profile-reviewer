@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ImageUploader } from "@/components/upload/ImageUploader";
 import { PersonaInput } from "@/components/persona/PersonaInput";
 import { ResultsGrid } from "@/components/results/ResultsGrid";
-import { ReviewResponse } from "@/lib/ai/types";
+import { ReviewResponse, ModelName } from "@/lib/ai/types";
 
 type Step = "upload" | "persona" | "results";
 
@@ -15,6 +15,15 @@ const STEPS: { key: Step; label: string }[] = [
   { key: "results", label: "Results" },
 ];
 
+const EMPTY_RESULTS: ReviewResponse = {
+  results: {
+    claude: { status: "rejected", error: "Waiting..." },
+    chatgpt: { status: "rejected", error: "Waiting..." },
+    gemini: { status: "rejected", error: "Waiting..." },
+    grok: { status: "rejected", error: "Waiting..." },
+  },
+};
+
 export default function ReviewPage() {
   const [step, setStep] = useState<Step>("upload");
   const [images, setImages] = useState<string[]>([]);
@@ -22,40 +31,13 @@ export default function ReviewPage() {
   const [isGeneratingPersona, setIsGeneratingPersona] = useState(false);
   const [isReviewing, setIsReviewing] = useState(false);
   const [results, setResults] = useState<ReviewResponse | null>(null);
-
-  const pollForResults = useCallback(async (jobId: string) => {
-    const maxAttempts = 60; // 2s * 60 = 2 min max
-    for (let i = 0; i < maxAttempts; i++) {
-      await new Promise((r) => setTimeout(r, 2000));
-      try {
-        const res = await fetch(`/api/review?jobId=${jobId}`);
-        if (!res.ok) continue;
-        const data = await res.json();
-        if (data.status === "done") {
-          setResults({ results: data.results });
-          setIsReviewing(false);
-          return;
-        }
-      } catch {
-        // Network blip - keep polling
-      }
-    }
-    // Timed out
-    setResults({
-      results: {
-        claude: { status: "rejected", error: "Timed out" },
-        chatgpt: { status: "rejected", error: "Timed out" },
-        gemini: { status: "rejected", error: "Timed out" },
-        grok: { status: "rejected", error: "Timed out" },
-      },
-    });
-    setIsReviewing(false);
-  }, []);
+  const [modelsCompleted, setModelsCompleted] = useState(0);
 
   const handleStartReview = useCallback(async () => {
     setStep("results");
     setIsReviewing(true);
-    setResults(null);
+    setResults({ ...EMPTY_RESULTS });
+    setModelsCompleted(0);
 
     try {
       const res = await fetch("/api/review", {
@@ -64,24 +46,58 @@ export default function ReviewPage() {
         body: JSON.stringify({ images, persona }),
       });
 
-      if (!res.ok) throw new Error(`Submit failed: ${res.status}`);
+      if (!res.ok || !res.body) throw new Error(`Request failed: ${res.status}`);
 
-      const { jobId } = await res.json();
-      // Poll in background - survives tab switches
-      pollForResults(jobId);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            const parsed = JSON.parse(line);
+            const model = parsed.model as ModelName;
+            setResults((prev) => {
+              if (!prev) return prev;
+              return {
+                results: {
+                  ...prev.results,
+                  [model]: {
+                    status: parsed.status,
+                    data: parsed.data,
+                    error: parsed.error,
+                  },
+                },
+              };
+            });
+            setModelsCompleted((c) => c + 1);
+          } catch {
+            // Partial JSON line, ignore
+          }
+        }
+      }
     } catch (err) {
       console.error("Review error:", err);
       setResults({
         results: {
-          claude: { status: "rejected", error: "Request failed" },
-          chatgpt: { status: "rejected", error: "Request failed" },
-          gemini: { status: "rejected", error: "Request failed" },
-          grok: { status: "rejected", error: "Request failed" },
+          claude: { status: "rejected", error: "Connection lost" },
+          chatgpt: { status: "rejected", error: "Connection lost" },
+          gemini: { status: "rejected", error: "Connection lost" },
+          grok: { status: "rejected", error: "Connection lost" },
         },
       });
+    } finally {
       setIsReviewing(false);
     }
-  }, [images, persona, pollForResults]);
+  }, [images, persona]);
 
   const handleReset = () => {
     setStep("upload");
@@ -90,6 +106,7 @@ export default function ReviewPage() {
     setResults(null);
     setIsReviewing(false);
     setIsGeneratingPersona(false);
+    setModelsCompleted(0);
   };
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
@@ -189,15 +206,21 @@ export default function ReviewPage() {
 
           {step === "results" && (
             <div className="animate-fade-in-up">
-              <ResultsGrid results={results} isLoading={isReviewing} />
-              <div className="mt-10">
-                <button
-                  onClick={handleReset}
-                  className="w-full py-4 border border-border text-text-secondary hover:text-text-primary hover:border-text-primary rounded-full transition-all font-medium text-base"
-                >
-                  Go again
-                </button>
-              </div>
+              <ResultsGrid
+                results={results}
+                isLoading={isReviewing}
+                modelsCompleted={modelsCompleted}
+              />
+              {!isReviewing && (
+                <div className="mt-10">
+                  <button
+                    onClick={handleReset}
+                    className="w-full py-4 border border-border text-text-secondary hover:text-text-primary hover:border-text-primary rounded-full transition-all font-medium text-base"
+                  >
+                    Go again
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
