@@ -3,6 +3,8 @@ import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
+const MODELS = ["claude-sonnet-4-6", "claude-sonnet-4-5-20250514", "claude-haiku-4-5"];
+
 export async function reviewWithClaude(
   images: string[],
   persona: string
@@ -24,33 +26,43 @@ export async function reviewWithClaude(
     }
   );
 
-  const response = await client.messages.create(
-    {
-      model: "claude-sonnet-4-6",
-      max_tokens: 4096,
-      system: [
-        {
-          type: "text",
-          text: systemPrompt,
-          cache_control: { type: "ephemeral" },
-        },
-      ],
-      messages: [
-        {
-          role: "user",
-          content: [
-            ...imageContent,
-            {
-              type: "text",
-              text: "Review this Hinge profile based on the screenshots above.",
-            },
-          ],
-        },
-      ],
-    },
-  );
+  let lastError: Error | null = null;
 
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
-  return parseReviewJSON(text);
+  for (const modelId of MODELS) {
+    try {
+      console.log(`[claude] Trying ${modelId}...`);
+      const response = await client.messages.create({
+        model: modelId,
+        max_tokens: 4096,
+        system: [
+          {
+            type: "text",
+            text: systemPrompt,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
+        messages: [
+          {
+            role: "user",
+            content: [
+              ...imageContent,
+              {
+                type: "text",
+                text: "Review this Hinge profile based on the screenshots above.",
+              },
+            ],
+          },
+        ],
+      });
+
+      const text =
+        response.content[0].type === "text" ? response.content[0].text : "";
+      return parseReviewJSON(text);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      console.error(`[claude] ${modelId} failed:`, lastError.message);
+    }
+  }
+
+  throw lastError ?? new Error("All Claude models failed");
 }

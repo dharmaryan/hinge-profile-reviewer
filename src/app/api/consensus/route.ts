@@ -34,13 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      generationConfig: {
-        maxOutputTokens: 2048,
-        responseMimeType: "application/json",
-      },
-    });
+    const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
 
     const prompt = `You're synthesizing ${reviewSummaries.length} independent AI reviews of someone's Hinge dating profile. Each reviewer had the same persona but different AI models, so they saw the same profile independently.
 
@@ -61,9 +55,29 @@ Respond with this JSON:
   "priority_changes": ["Top 3-5 changes ranked by how many reviewers mentioned them and severity. Most impactful first."]
 }`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    const consensus = JSON.parse(text);
+    let consensus = null;
+    for (const modelId of MODELS) {
+      try {
+        console.log(`[consensus] Trying ${modelId}...`);
+        const model = genAI.getGenerativeModel({
+          model: modelId,
+          generationConfig: {
+            maxOutputTokens: 2048,
+            responseMimeType: "application/json",
+          },
+        });
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        consensus = JSON.parse(text);
+        break;
+      } catch (err) {
+        console.error(`[consensus] ${modelId} failed:`, err instanceof Error ? err.message : err);
+      }
+    }
+
+    if (!consensus) {
+      return NextResponse.json({ error: "All Gemini models failed" }, { status: 502 });
+    }
 
     return NextResponse.json({ consensus });
   } catch (err) {

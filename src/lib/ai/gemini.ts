@@ -3,21 +3,14 @@ import { ReviewResult } from "./types";
 import { buildSystemPrompt } from "./prompt-templates";
 import { parseReviewJSON } from "./parse-json";
 
+const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+
 export async function reviewWithGemini(
   images: string[],
   persona: string
 ): Promise<ReviewResult> {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
   const systemPrompt = buildSystemPrompt(persona);
-
-  const model = genAI.getGenerativeModel({
-    model: "gemini-3-flash-preview",
-    systemInstruction: systemPrompt,
-    generationConfig: {
-      maxOutputTokens: 4096,
-      responseMimeType: "application/json",
-    },
-  });
 
   const imageParts = images.map((img) => {
     const base64Data = img.replace(/^data:image\/\w+;base64,/, "");
@@ -29,11 +22,32 @@ export async function reviewWithGemini(
     };
   });
 
-  const result = await model.generateContent([
-    ...imageParts,
-    { text: "Review this Hinge profile based on the screenshots above." },
-  ]);
+  let lastError: Error | null = null;
 
-  const text = result.response.text();
-  return parseReviewJSON(text);
+  for (const modelId of MODELS) {
+    try {
+      console.log(`[gemini] Trying ${modelId}...`);
+      const model = genAI.getGenerativeModel({
+        model: modelId,
+        systemInstruction: systemPrompt,
+        generationConfig: {
+          maxOutputTokens: 4096,
+          responseMimeType: "application/json",
+        },
+      });
+
+      const result = await model.generateContent([
+        ...imageParts,
+        { text: "Review this Hinge profile based on the screenshots above." },
+      ]);
+
+      const text = result.response.text();
+      return parseReviewJSON(text);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      console.error(`[gemini] ${modelId} failed:`, lastError.message);
+    }
+  }
+
+  throw lastError ?? new Error("All Gemini models failed");
 }
